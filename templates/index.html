@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+{% block extrahead %}
+  <meta http-equiv="refresh" content = "30"; URL="http://localhost/beamsload/index.html">
+  <style type="text/css">
+      html, body { height: 100%; margin: 0; padding: 0; }
+      #map { height: 80%; }
+  </style>
+{% endblock %}
+{% block content %}
+   <div id="map"></div>
+    <script type="text/javascript">
+    function initMap() {
+    	  var map = new google.maps.Map(document.getElementById('map'), {
+    	    zoom: 4,
+    	    center: {lat: 60, lng: 120},
+    	    mapTypeId: google.maps.MapTypeId.TERRAIN
+    	  });
+    	  var positionsDict = {{ positionsDict|safe }}
+    	  var beamCoordinates = {{ points|safe }}
+    	  var count = Object.keys(beamCoordinates).length;
+    	  for (i = 1; i < count + 1; i++){
+    	      var beamPath = new google.maps.Polyline({
+    	      path: beamCoordinates[i],
+    	      geodesic: true,
+    	      strokeColor: positionsDict[i].color,
+    	      strokeOpacity: 1.0,
+    	      strokeWeight: 2
+    	    });
+    	    console.log(beamCoordinates[i])
+    	    beamPath.setMap(map);
+    	  }
+    	  
+    	  var beamsDict = {{ beamsDict|safe }}
+    	  var beamsCount = Object.keys(beamsDict).length;
+    	  for (i = 1; i < beamsCount + 1; i++){
+    		  var coord = positionsDict[i]
+    		  var latLng = new google.maps.LatLng(coord)
+    		  var mapLabel = new MapLabel({
+    			  text: beamsDict[i],
+    		      position: latLng,
+                  map: map,
+                  fontSize: 28,
+                  align: 'center',
+                  fontColor: positionsDict[i].color
+    		  });
+    		  console.log(coord)
+    		  console.log(positionsDict[i])
+    	  }            
+          
+    	}
+    
+    google.maps.event.addDomListener(window, 'load', initMap);
+    </script>
+ 
+{% endblock %}
